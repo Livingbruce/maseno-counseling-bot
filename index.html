@@ -89,6 +89,14 @@
         margin-bottom: 20px;
         text-align: center;
       }
+      .success-message {
+        background: #e8f5e8;
+        color: #2e7d32;
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
       .demo-credentials {
         background: #f0f8ff;
         padding: 15px;
@@ -126,7 +134,7 @@
             <input type="password" id="password" value="123456" required>
           </div>
           
-          <div id="errorMessage" class="error-message" style="display: none;"></div>
+          <div id="messageDiv" style="display: none;"></div>
           
           <button type="submit" class="login-button" id="loginButton">
             Sign In
@@ -143,7 +151,7 @@
     
     <script>
       const loginForm = document.getElementById("loginForm");
-      const errorMessage = document.getElementById("errorMessage");
+      const messageDiv = document.getElementById("messageDiv");
       const loginButton = document.getElementById("loginButton");
       
       loginForm.addEventListener("submit", async (e) => {
@@ -154,7 +162,7 @@
         
         loginButton.disabled = true;
         loginButton.textContent = "Signing in...";
-        errorMessage.style.display = "none";
+        messageDiv.style.display = "none";
         
         try {
           const response = await fetch("/api/login", {
@@ -172,11 +180,10 @@
             localStorage.setItem("token", data.token);
             localStorage.setItem("user", JSON.stringify(data.user));
             
-            // Show success and redirect
-            errorMessage.style.display = "block";
-            errorMessage.style.background = "#e8f5e8";
-            errorMessage.style.color = "#2e7d32";
-            errorMessage.textContent = "Login successful! Redirecting to dashboard...";
+            // Show success
+            messageDiv.style.display = "block";
+            messageDiv.className = "success-message";
+            messageDiv.textContent = "Login successful! Redirecting to dashboard...";
             
             // Redirect to dashboard
             setTimeout(() => {
@@ -186,8 +193,9 @@
             throw new Error(data.error || "Login failed");
           }
         } catch (error) {
-          errorMessage.style.display = "block";
-          errorMessage.textContent = "Error: " + error.message;
+          messageDiv.style.display = "block";
+          messageDiv.className = "error-message";
+          messageDiv.textContent = "Error: " + error.message;
         } finally {
           loginButton.disabled = false;
           loginButton.textContent = "Sign In";
