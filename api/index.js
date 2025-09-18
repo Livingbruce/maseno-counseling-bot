@@ -55,6 +55,62 @@ export default async function handler(req, res) {
         });
         break;
 
+      case "/api/login":
+        if (req.method === "POST") {
+          // Handle login request
+          const { email, password } = req.body;
+          
+          // Check if credentials are provided
+          if (!email || !password) {
+            return res.status(400).json({
+              error: "Email and password are required"
+            });
+          }
+
+          // For now, return a simple success response
+          // In a real implementation, you would validate against the database
+          if (email === "admin@maseno.ac.ke" && password === "123456") {
+            res.status(200).json({
+              message: "Login successful",
+              token: "mock-jwt-token-" + Date.now(),
+              user: {
+                id: 1,
+                name: "Admin User",
+                email: "admin@maseno.ac.ke",
+                is_admin: true
+              }
+            });
+          } else {
+            res.status(401).json({
+              error: "Invalid credentials"
+            });
+          }
+        } else {
+          res.status(405).json({
+            error: "Method not allowed. Use POST for login."
+          });
+        }
+        break;
+
+      case "/api/me":
+        if (req.method === "GET") {
+          // Handle get current user request
+          res.status(200).json({
+            message: "User profile retrieved",
+            user: {
+              id: 1,
+              name: "Admin User",
+              email: "admin@maseno.ac.ke",
+              is_admin: true
+            }
+          });
+        } else {
+          res.status(405).json({
+            error: "Method not allowed. Use GET for profile."
+          });
+        }
+        break;
+
       default:
         res.status(404).json({
           error: "Route not found",
