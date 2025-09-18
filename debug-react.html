@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maseno Counseling Dashboard - Debug</title>
+    <style>
+      body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+      .debug { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; }
+      .error { background: #ffebee; color: #c62828; }
+      .success { background: #e8f5e8; color: #2e7d32; }
+    </style>
+  </head>
+  <body>
+    <div class="debug">
+      <h1>🔍 React App Debug</h1>
+      <p>If you can see this page, the basic HTML is loading.</p>
+    </div>
+    
+    <div class="debug">
+      <h3>JavaScript Test:</h3>
+      <p id="js-test">Testing JavaScript...</p>
+    </div>
+    
+    <div class="debug">
+      <h3>React App Test:</h3>
+      <div id="root">
+        <p>React app should load here. If you see this text, React is not loading.</p>
+      </div>
+    </div>
+    
+    <div class="debug">
+      <h3>Console Errors:</h3>
+      <div id="console-errors"></div>
+    </div>
+    
+    <script>
+      // Test JavaScript
+      document.getElementById("js-test").innerHTML = "✅ JavaScript is working!";
+      
+      // Capture console errors
+      const originalError = console.error;
+      const originalLog = console.log;
+      const errors = [];
+      
+      console.error = function(...args) {
+        errors.push("ERROR: " + args.join(" "));
+        document.getElementById("console-errors").innerHTML = errors.join("<br>");
+        originalError.apply(console, args);
+      };
+      
+      console.log = function(...args) {
+        errors.push("LOG: " + args.join(" "));
+        document.getElementById("console-errors").innerHTML = errors.join("<br>");
+        originalLog.apply(console, args);
+      };
+      
+      // Check if React loads
+      setTimeout(() => {
+        const root = document.getElementById("root");
+        if (root.innerHTML.includes("React app should load here")) {
+          root.innerHTML = "❌ React app failed to load";
+          root.className = "error";
+        } else {
+          root.innerHTML = "✅ React app loaded successfully!";
+          root.className = "success";
+        }
+      }, 5000);
+    </script>
+    
+    <script type="module" crossorigin src="/assets/index-CzBoTllF.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Cbsup9lY.css">
+  </body>
+</html>

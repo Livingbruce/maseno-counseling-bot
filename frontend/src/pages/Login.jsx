@@ -1,218 +1,131 @@
-import React, { useState, useContext, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { AuthContext } from "../AuthContext";
-import { useTheme } from "../ThemeContext";
+import React, { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { useAuth } from "../utils/AuthContext"
+import "../styles/theme.css"
 
-const Login = () => {
-  const { login, user, loading: authLoading } = useContext(AuthContext);
-  const { isDarkMode } = useTheme();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  // Auto-redirect if already logged in
-  useEffect(() => {
-    if (user && !authLoading) {
-      // Redirect to the page they were trying to access, or dashboard
-      const from = location.state?.from?.pathname || "/";
-      navigate(from, { replace: true });
-    }
-  }, [user, authLoading, navigate, location]);
+function Login() {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
+  const { loginUser } = useAuth()
+  const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+    e.preventDefault()
+    setError("")
+    setLoading(true)
 
     try {
-      await login(email, password);
-      // Navigation will be handled by the useEffect above
-    } catch (err) {
-      console.error("Login error:", err);
-      const errorMessage = err.response?.data?.error || "Invalid credentials. Please try again.";
-      setError(errorMessage);
+      console.log("Starting login process...")
+      const result = await loginUser(email, password)
+      console.log("Login result:", result)
+      
+      if (result.success) {
+        console.log("Login successful, navigating to dashboard...")
+        navigate("/dashboard")
+      } else {
+        console.log("Login failed:", result.error)
+        setError(result.error)
+      }
+    } catch (error) {
+      console.error("Login error:", error)
+      setError("An unexpected error occurred")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
-
-  // Show loading while checking authentication
-  if (authLoading) {
-    return (
-      <div className="dashboard-container" style={{ 
-        display: "flex", 
-        justifyContent: "center", 
-        alignItems: "center", 
-        height: "100vh",
-        flexDirection: "column",
-        gap: "20px"
-      }}>
-        <div className="loading-spinner" style={{ width: "40px", height: "40px" }}></div>
-        <div style={{ 
-          color: "var(--text-primary)", 
-          fontSize: "18px",
-          fontWeight: "500"
-        }}>
-          Checking authentication...
-        </div>
-      </div>
-    );
-  }
-
-  // Don't render login form if user is already logged in
-  if (user) {
-    return null; // Will redirect via useEffect
   }
 
   return (
-    <div className="dashboard-container" style={{ 
+    <div style={{
       minHeight: "100vh",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
+      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
       padding: "20px"
     }}>
-      <div className="modern-card" style={{
+      <div style={{
+        background: "white",
+        padding: "40px",
+        borderRadius: "12px",
+        boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
         width: "100%",
-        maxWidth: "420px",
-        padding: "48px 40px",
-        textAlign: "center"
+        maxWidth: "400px"
       }}>
-        {/* Logo and Header */}
-        <div style={{ marginBottom: "32px" }}>
-          <div style={{
-            width: "80px",
-            height: "80px",
-            borderRadius: "16px",
-            background: "var(--accent-color)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "32px",
-            margin: "0 auto 24px auto"
-          }}>
-            🏥
-          </div>
-          <h1 style={{
-            color: "var(--text-primary)",
-            fontSize: "28px",
-            fontWeight: "700",
-            margin: "0 0 8px 0"
-          }}>
-            Counselor Login
-          </h1>
-          <p style={{
-            color: "var(--text-secondary)",
-            fontSize: "16px",
-            margin: 0
-          }}>
-            Sign in to access the admin dashboard
-          </p>
+        <div style={{ textAlign: "center", marginBottom: "30px" }}>
+          <h1 style={{ color: "#333", margin: "0 0 10px 0", fontSize: "24px" }}>🎓 Maseno Counseling</h1>
+          <p style={{ color: "#666", margin: "0" }}>Sign in to your account</p>
         </div>
-
-        {/* Error Message */}
-        {error && (
-          <div style={{
-            backgroundColor: "var(--alert-danger)",
-            color: "var(--alert-danger-text)",
-            padding: "12px 16px",
-            borderRadius: "8px",
-            marginBottom: "24px",
-            fontSize: "14px",
-            fontWeight: "500"
-          }}>
-            {error}
-          </div>
-        )}
-
-        {/* Login Form */}
-        <form onSubmit={handleSubmit} style={{ textAlign: "left" }}>
+        
+        <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: "20px" }}>
-            <label style={{
-              display: "block",
-              color: "var(--text-primary)",
-              fontSize: "14px",
-              fontWeight: "600",
-              marginBottom: "8px"
-            }}>
-              Email Address
-            </label>
+            <label style={{ display: "block", marginBottom: "5px", color: "#333", fontWeight: "500" }}>Email Address</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
               required
-              disabled={loading}
-              className="input-modern"
-              placeholder="Enter your email address"
+              style={{
+                width: "100%",
+                padding: "12px",
+                border: "1px solid #ddd",
+                borderRadius: "6px",
+                fontSize: "16px",
+                boxSizing: "border-box"
+              }}
             />
           </div>
-
-          <div style={{ marginBottom: "32px" }}>
-            <label style={{
-              display: "block",
-              color: "var(--text-primary)",
-              fontSize: "14px",
-              fontWeight: "600",
-              marginBottom: "8px"
-            }}>
-              Password
-            </label>
+          
+          <div style={{ marginBottom: "20px" }}>
+            <label style={{ display: "block", marginBottom: "5px", color: "#333", fontWeight: "500" }}>Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={loading}
-              className="input-modern"
               placeholder="Enter your password"
+              required
+              style={{
+                width: "100%",
+                padding: "12px",
+                border: "1px solid #ddd",
+                borderRadius: "6px",
+                fontSize: "16px",
+                boxSizing: "border-box"
+              }}
             />
           </div>
-
+          
+          {error && <div style={{ background: "#ffebee", color: "#c62828", padding: "10px", borderRadius: "6px", marginBottom: "20px", textAlign: "center" }}>{error}</div>}
+          
           <button 
             type="submit" 
             disabled={loading}
-            className="btn-modern btn-primary-modern"
             style={{
               width: "100%",
-              padding: "16px",
+              padding: "12px",
+              background: loading ? "#ccc" : "#667eea",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
               fontSize: "16px",
-              fontWeight: "600",
-              opacity: loading ? 0.7 : 1,
+              fontWeight: "500",
               cursor: loading ? "not-allowed" : "pointer"
             }}
           >
-            {loading ? (
-              <>
-                <div className="loading-spinner" style={{ width: "16px", height: "16px" }}></div>
-                Logging in...
-              </>
-            ) : (
-              "Sign In"
-            )}
+            {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
-
-        {/* Footer */}
-        <div style={{
-          marginTop: "32px",
-          paddingTop: "24px",
-          borderTop: "1px solid var(--border-color)"
-        }}>
-          <p style={{
-            color: "var(--text-muted)",
-            fontSize: "12px",
-            margin: 0
-          }}>
-            Maseno University Counseling Services
-          </p>
+        
+        <div style={{ background: "#f0f8ff", padding: "15px", borderRadius: "6px", marginTop: "20px", textAlign: "center" }}>
+          <h4 style={{ margin: "0 0 10px 0", color: "#333" }}>Demo Credentials:</h4>
+          <p style={{ margin: "5px 0", color: "#666", fontSize: "14px" }}><strong>Email:</strong> admin@maseno.ac.ke</p>
+          <p style={{ margin: "5px 0", color: "#666", fontSize: "14px" }}><strong>Password:</strong> 123456</p>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login
