@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maseno Counseling - Working Login</title>
+    <style>
+      body { 
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+      .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+      .login-card {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        width: 100%;
+        max-width: 400px;
+      }
+      .login-header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .login-header h1 {
+        color: #333;
+        margin: 0 0 10px 0;
+        font-size: 24px;
+      }
+      .login-header p {
+        color: #666;
+        margin: 0;
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #333;
+        font-weight: 500;
+      }
+      .form-group input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 16px;
+        box-sizing: border-box;
+      }
+      .form-group input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+      .login-button {
+        width: 100%;
+        padding: 12px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .login-button:hover {
+        background: #5a6fd8;
+      }
+      .login-button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+      .error-message {
+        background: #ffebee;
+        color: #c62828;
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .success-message {
+        background: #e8f5e8;
+        color: #2e7d32;
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .demo-credentials {
+        background: #f0f8ff;
+        padding: 15px;
+        border-radius: 6px;
+        margin-top: 20px;
+        text-align: center;
+      }
+      .demo-credentials h4 {
+        margin: 0 0 10px 0;
+        color: #333;
+      }
+      .demo-credentials p {
+        margin: 5px 0;
+        color: #666;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="login-card">
+        <div class="login-header">
+          <h1>🎓 Maseno Counseling</h1>
+          <p>Sign in to your account</p>
+        </div>
+        
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" value="admin@maseno.ac.ke" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" value="123456" required>
+          </div>
+          
+          <div id="messageDiv" style="display: none;"></div>
+          
+          <button type="submit" class="login-button" id="loginButton">
+            Sign In
+          </button>
+        </form>
+        
+        <div class="demo-credentials">
+          <h4>Demo Credentials:</h4>
+          <p><strong>Email:</strong> admin@maseno.ac.ke</p>
+          <p><strong>Password:</strong> 123456</p>
+        </div>
+      </div>
+    </div>
+    
+    <script>
+      const loginForm = document.getElementById("loginForm");
+      const messageDiv = document.getElementById("messageDiv");
+      const loginButton = document.getElementById("loginButton");
+      
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        
+        loginButton.disabled = true;
+        loginButton.textContent = "Signing in...";
+        messageDiv.style.display = "none";
+        
+        try {
+          const response = await fetch("/api/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password })
+          });
+          
+          const data = await response.json();
+          
+          if (response.ok && data.message === "Login successful") {
+            // Store token
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+            
+            // Show success
+            messageDiv.style.display = "block";
+            messageDiv.className = "success-message";
+            messageDiv.textContent = "Login successful! Redirecting to dashboard...";
+            
+            // Redirect to dashboard
+            setTimeout(() => {
+              window.location.href = "/dashboard";
+            }, 1500);
+          } else {
+            throw new Error(data.error || "Login failed");
+          }
+        } catch (error) {
+          messageDiv.style.display = "block";
+          messageDiv.className = "error-message";
+          messageDiv.textContent = "Error: " + error.message;
+        } finally {
+          loginButton.disabled = false;
+          loginButton.textContent = "Sign In";
+        }
+      });
+      
+      // Check if already logged in
+      if (localStorage.getItem("token")) {
+        window.location.href = "/dashboard";
+      }
+    </script>
+  </body>
+</html>
