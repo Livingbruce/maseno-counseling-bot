@@ -1,9 +1,5 @@
 {
   "name": "maseno-counseling-api",
   "version": "1.0.0",
-  "type": "module",
-  "main": "index.js",
-  "dependencies": {
-    "cors": "^2.8.5"
-  }
+  "type": "module"
 }
