@@ -14,5 +14,8 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ]
+  ],
+  "buildCommand": "cd dashboard && npm install && npm run build && cp -r dist/* ../",
+  "outputDirectory": ".",
+  "installCommand": "npm install"
 }
