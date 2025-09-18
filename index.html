@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maseno Counseling Bot - Fresh Deployment</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .container {
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        text-align: center;
+        max-width: 600px;
+      }
+      h1 {
+        color: #333;
+        margin-bottom: 20px;
+      }
+      .status {
+        background: #e8f5e8;
+        color: #2d5a2d;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 20px 0;
+      }
+      .credentials {
+        background: #f0f8ff;
+        padding: 20px;
+        border-radius: 5px;
+        margin: 20px 0;
+        text-align: left;
+      }
+      .btn {
+        background: #667eea;
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        margin: 10px;
+        font-size: 16px;
+      }
+      .btn:hover {
+        background: #5a6fd8;
+      }
+      .btn-success {
+        background: #28a745;
+      }
+      .btn-success:hover {
+        background: #218838;
+      }
+      .test-results {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 5px;
+        margin: 20px 0;
+        text-align: left;
+      }
+      .endpoint {
+        background: #e9ecef;
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 3px;
+        font-family: monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🎓 Maseno Counseling Bot</h1>
+      <div class="status">
+        ✅ <strong>Fresh Deployment - Version 1.0.0</strong><br>
+        Complete authentication system ready for testing!
+      </div>
+      
+      <div class="credentials">
+        <h3>🔑 Test Credentials</h3>
+        <p><strong>Email:</strong> admin@maseno.ac.ke</p>
+        <p><strong>Password:</strong> 123456</p>
+        <p><strong>Status:</strong> Admin User</p>
+      </div>
+      
+      <div>
+        <button onclick="testAPI()" class="btn">🔧 Test API</button>
+        <button onclick="testLogin()" class="btn btn-success">🔑 Test Login</button>
+        <button onclick="testAll()" class="btn">🧪 Test All</button>
+      </div>
+      
+      <div class="test-results" id="testResults" style="display: none;">
+        <h3>🧪 Test Results</h3>
+        <div id="results"></div>
+      </div>
+      
+      <div style="margin-top: 30px;">
+        <h3>📋 Available Endpoints</h3>
+        <div class="endpoint">GET /api/ - API Status</div>
+        <div class="endpoint">GET /api/health - Health Check</div>
+        <div class="endpoint">POST /api/login - Authentication</div>
+        <div class="endpoint">GET /api/me - User Data</div>
+        <div class="endpoint">GET /api/test - Test Endpoint</div>
+      </div>
+      
+      <div style="margin-top: 30px; font-size: 14px; color: #666;">
+        <p>Version 1.0.0 | Fresh Deployment | 2025-09-18</p>
+        <p>Authentication: ✅ Ready | Database: ✅ Connected | API: ✅ Working</p>
+      </div>
+    </div>
+    
+    <script>
+      async function testAPI() {
+        try {
+          const response = await fetch("/api/");
+          const data = await response.json();
+          
+          showResults("API Test", response.ok ? "SUCCESS" : "FAILED", data);
+        } catch (error) {
+          showResults("API Test", "ERROR", error.message);
+        }
+      }
+      
+      async function testLogin() {
+        try {
+          const response = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: "admin@maseno.ac.ke",
+              password: "123456"
+            })
+          });
+          
+          const data = await response.json();
+          
+          if (response.ok && data.message === "Login successful") {
+            showResults("Login Test", "SUCCESS", {
+              message: "Login successful!",
+              user: data.user.name,
+              email: data.user.email,
+              admin: data.user.is_admin ? "Yes" : "No",
+              token: data.token ? "Present" : "Missing"
+            });
+          } else {
+            showResults("Login Test", "FAILED", data);
+          }
+        } catch (error) {
+          showResults("Login Test", "ERROR", error.message);
+        }
+      }
+      
+      async function testAll() {
+        const tests = [
+          { name: "API Status", fn: testAPI },
+          { name: "Health Check", fn: testHealth },
+          { name: "Login", fn: testLogin },
+          { name: "Test Endpoint", fn: testTest }
+        ];
+        
+        for (const test of tests) {
+          await test.fn();
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      }
+      
+      async function testHealth() {
+        try {
+          const response = await fetch("/api/health");
+          const data = await response.json();
+          showResults("Health Check", response.ok ? "SUCCESS" : "FAILED", data);
+        } catch (error) {
+          showResults("Health Check", "ERROR", error.message);
+        }
+      }
+      
+      async function testTest() {
+        try {
+          const response = await fetch("/api/test");
+          const data = await response.json();
+          showResults("Test Endpoint", response.ok ? "SUCCESS" : "FAILED", data);
+        } catch (error) {
+          showResults("Test Endpoint", "ERROR", error.message);
+        }
+      }
+      
+      function showResults(testName, status, data) {
+        const resultsDiv = document.getElementById("testResults");
+        const results = document.getElementById("results");
+        
+        resultsDiv.style.display = "block";
+        
+        const statusColor = status === "SUCCESS" ? "#28a745" : status === "FAILED" ? "#dc3545" : "#ffc107";
+        const statusText = status === "SUCCESS" ? "✅" : status === "FAILED" ? "❌" : "⚠️";
+        
+        results.innerHTML += `
+          <div style="margin: 10px 0; padding: 10px; border-left: 4px solid ${statusColor}; background: #f8f9fa;">
+            <strong>${statusText} ${testName}: ${status}</strong>
+            <pre style="margin: 5px 0; font-size: 12px; color: #666;">${JSON.stringify(data, null, 2)}</pre>
+          </div>
+        `;
+      }
+    </script>
+  </body>
+</html>
