@@ -1,85 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maseno Counseling Dashboard - Simple Test</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
-        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .login-form { display: flex; flex-direction: column; gap: 15px; }
-        .form-group { display: flex; flex-direction: column; }
-        .form-group label { font-weight: bold; margin-bottom: 5px; }
-        .form-group input { padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
-        .btn { background: #007bff; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        .btn:hover { background: #0056b3; }
-        .error { color: red; margin-top: 10px; }
-        .success { color: green; margin-top: 10px; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>🎓 Maseno Counseling Dashboard</h1>
-        <p>Simple test version to verify functionality</p>
-        
-        <div id="app">
-            <div class="login-form">
-                <h2>Login</h2>
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" value="admin@maseno.ac.ke">
-                </div>
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" value="123456">
-                </div>
-                <button class="btn" onclick="testLogin()">Login</button>
-                <div id="result"></div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const API_BASE = "https://maseno-counseling-fresh-7es5au5zi-victor-mburugu-s-projects.vercel.app";
-        
-        async function testLogin() {
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            const resultDiv = document.getElementById("result");
-            
-            resultDiv.innerHTML = "Testing login...";
-            
-            try {
-                const response = await fetch(`${API_BASE}/api/login`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, password })
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok && data.message === "Login successful") {
-                    resultDiv.innerHTML = `<div class="success">✅ Login successful! Welcome ${data.user.name}</div>`;
-                    resultDiv.innerHTML += `<div>Token: ${data.token ? "Present" : "Missing"}</div>`;
-                    resultDiv.innerHTML += `<div>Admin: ${data.user.is_admin ? "Yes" : "No"}</div>`;
-                } else {
-                    resultDiv.innerHTML = `<div class="error">❌ Login failed: ${data.error || data.message}</div>`;
-                }
-            } catch (error) {
-                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
-            }
-        }
-        
-        // Test API on page load
-        window.onload = async function() {
-            try {
-                const response = await fetch(`${API_BASE}/api/test`);
-                const data = await response.json();
-                console.log("API test:", data);
-            } catch (error) {
-                console.error("API test failed:", error);
-            }
-        };
-    </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maseno Counseling Dashboard</title>
+    <script type="module" crossorigin src="/assets/index-D2JlUeJL.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Cbsup9lY.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>
